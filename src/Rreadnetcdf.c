@@ -58,8 +58,7 @@ void open_netcdf(
   char **filename,	/* NetCDF filename, passed by S function */
   int *ncid_r)		/* input: verbose error option
 			   output:NetCDF file id */
-{
-
+{ 
   int  ncid;			/* netCDF id */
   /* is this a horrible way to set options or what?*/
   ncopts=0;
@@ -95,7 +94,7 @@ SEXP do_varname_2_id(SEXP nc_id,SEXP namelist){
     PROTECT(rval=allocVector(INTSXP,nn));
 
     for (i=0;i<nn;i++){
-	var_id=ncvarid(ncid,CHAR(STRING(namelist)[i]));
+	var_id=ncvarid(ncid,CHAR(STRING_ELT(namelist, i)));
 	if (var_id<0)
 	    INTEGER(rval)[i]=NA_INTEGER;
 	else 
@@ -130,52 +129,52 @@ SEXP do_inquire_varid(SEXP ncid, SEXP var_id){
 			   &vtype, &ndims,dims,(int *)0);
 	if (errorcode<0) {
 	    warning("Nonexistent netCDF variable ID");
-	    VECTOR(dimidlist)[i]=allocVector(INTSXP,1);
-	    INTEGER(VECTOR(dimidlist)[i])[0]=NA_INTEGER;
-	    VECTOR(dimlist)[i]=allocVector(INTSXP,1);
-	    INTEGER(VECTOR(dimlist)[i])[0]=NA_INTEGER;
-	    STRING(vartypes)[i]=NA_STRING;
+	    SET_VECTOR_ELT(dimidlist, i, allocVector(INTSXP,1));
+	    INTEGER(VECTOR_ELT(dimidlist,i))[0]=NA_INTEGER;
+	    SET_VECTOR_ELT(dimlist, i, allocVector(INTSXP,1));
+	    INTEGER(VECTOR_ELT(dimlist,i))[0]=NA_INTEGER;
+	    SET_STRING_ELT(vartypes, i, NA_STRING);
 	    continue;
 	} else {
-	    VECTOR(dimidlist)[i]=allocVector(INTSXP,ndims);
+	    SET_VECTOR_ELT(dimidlist, i, allocVector(INTSXP,ndims));
 	    for (j=0;j<ndims;j++){
-		INTEGER(VECTOR(dimidlist)[i])[j]=dims[j];
+		INTEGER(VECTOR_ELT(dimidlist, i))[j]=dims[j];
 	    }
 	    switch (vtype) {
 	    case NC_LONG:
-		STRING(vartypes)[i]=mkChar("integer");
+		SET_STRING_ELT(vartypes, i, mkChar("integer"));
 		break;
 	    case NC_FLOAT:
-		STRING(vartypes)[i]=mkChar("single");
+		SET_STRING_ELT(vartypes, i, mkChar("single"));
 		break;
 	    case NC_DOUBLE:
-		STRING(vartypes)[i]=mkChar("numeric");
+		SET_STRING_ELT(vartypes, i, mkChar("numeric"));
 		break;
 	    case NC_CHAR:
-		STRING(vartypes)[i]=mkChar("char");
+		SET_STRING_ELT(vartypes, i, mkChar("char"));
 		break;
 	    case NC_SHORT:
-		STRING(vartypes)[i]=mkChar("short integer");
+		SET_STRING_ELT(vartypes, i, mkChar("short integer"));
 		break;
 	    case NC_BYTE:
-		STRING(vartypes)[i]=mkChar("byte");
+		SET_STRING_ELT(vartypes, i, mkChar("byte"));
 		break;
 	    default:
 		warning("Unknown variable type");
-		STRING(vartypes)[i]=NA_STRING;
+		SET_STRING_ELT(vartypes, i, NA_STRING);
 	    }
 	}	    
-	VECTOR(dimlist)[i]=allocVector(INTSXP,ndims);
+	SET_VECTOR_ELT(dimlist, i, allocVector(INTSXP,ndims));
 	for (j=0;j<ndims;j++){
 	    errorcode=ncdiminq(INTEGER(ncid)[0],dims[j],(char*)0, &dimval);
-	    INTEGER(VECTOR(dimlist)[i])[j]=dimval;
+	    INTEGER(VECTOR_ELT(dimlist,i))[j]=dimval;
 	}
 
     }
     PROTECT(rval=allocVector(VECSXP,3));
-    VECTOR(rval)[0]=vartypes;
-    VECTOR(rval)[1]=dimlist;
-    VECTOR(rval)[2]=dimidlist;
+    SET_VECTOR_ELT(rval,0, vartypes);
+    SET_VECTOR_ELT(rval,1, dimlist);
+    SET_VECTOR_ELT(rval,2, dimidlist);
     UNPROTECT(4);
     return rval;
 }
@@ -285,53 +284,53 @@ SEXP do_get_global_atts(SEXP ncid){
     for(k=0;k<natts;k++){
 	    errorcode=ncattname(INTEGER(ncid)[0],NC_GLOBAL,k,name);
 	    if (errorcode<0){
-		STRING(attname)[k]=NA_STRING;
-		VECTOR(attributes)[k]=R_NilValue;
+		SET_STRING_ELT(attname, k, NA_STRING);
+		SET_VECTOR_ELT(attributes, k, R_NilValue);
 		continue;
 	    }
-	    STRING(attname)[k]=mkChar(name);
+	    SET_STRING_ELT(attname, k, mkChar(name));
 	    errorcode=ncattinq(INTEGER(ncid)[0],NC_GLOBAL,
 			   name,&atype,&attlen);
 
 	    if (errorcode<0){
-		VECTOR(attributes)[k]=R_NilValue;
+		SET_VECTOR_ELT(attributes, k, R_NilValue);
 		continue;
 	    }
 	    
 	    switch (atype) {
 	    case NC_LONG:
-		VECTOR(attributes)[k]=allocVector(INTSXP,attlen);
+		SET_VECTOR_ELT(attributes, k, allocVector(INTSXP,attlen));
 		if (ncattget(INTEGER(ncid)[0],var_id,name,
-			     (void *)(INTEGER(VECTOR(attributes)[k]))) <0)
-		    VECTOR(attributes)[k]=R_NilValue;
+			     (void *)(INTEGER(VECTOR_ELT(attributes, k)))) <0)
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		break;
 	    case NC_FLOAT:
 		df=Calloc(attlen,float);
 		if (ncattget(INTEGER(ncid)[0],var_id,
 			     name,(void *)df) <0)
-		    VECTOR(attributes)[k]=R_NilValue;
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		else {
-		    VECTOR(attributes)[k]=allocVector(REALSXP,attlen);
+		    SET_VECTOR_ELT(attributes, k, allocVector(REALSXP,attlen));
 		    for(j=0;j<attlen;j++)
-			REAL(VECTOR(attributes)[k])[j]=(double) df[j];
+			REAL(VECTOR_ELT(attributes, k))[j]=(double) df[j];
 		}
 		Free(df);
 		break;
 	    case NC_DOUBLE:
-		VECTOR(attributes)[k]=allocVector(REALSXP,attlen);
+		SET_VECTOR_ELT(attributes, k, allocVector(REALSXP,attlen));
 		if (ncattget(INTEGER(ncid)[0],var_id,name,
-			     (void *)(REAL(VECTOR(attributes)[k])))<0)
-		    VECTOR(attributes)[k]=R_NilValue;
+			     (void *)(REAL(VECTOR_ELT(attributes, k))))<0)
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		break;
 	    case NC_CHAR:
 		dc=Calloc(attlen+1,char);
 		if (ncattget(INTEGER(ncid)[0],var_id,name,
 			     (void *)dc)<0)
-		    VECTOR(attributes)[k]=R_NilValue;
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		else {
-		dc[attlen]=0; /* may not be zero-terminated */
-		VECTOR(attributes)[k]=allocVector(STRSXP,1);
-		STRING(VECTOR(attributes)[k])[0]=mkChar(dc);
+		    dc[attlen]=0; /* may not be zero-terminated */
+		    SET_VECTOR_ELT(attributes, k, allocVector(STRSXP,1));
+		    SET_STRING_ELT(VECTOR_ELT(attributes, k), 0, mkChar(dc));
 		}
 		Free(dc);
 		break;
@@ -339,21 +338,21 @@ SEXP do_get_global_atts(SEXP ncid){
 		ds=Calloc(attlen,short int);
 		if (ncattget(INTEGER(ncid)[0],var_id,name,
 			(void *)ds)<0)
-		    VECTOR(attributes)[k]=R_NilValue;
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		else {
-		    VECTOR(attributes)[k]=allocVector(INTSXP,attlen);
+		    SET_VECTOR_ELT(attributes, k, allocVector(INTSXP,attlen));
 		    for(j=0;j<attlen;j++)
-			INTEGER(VECTOR(attributes)[k])[j]=(int) ds[j];
+			INTEGER(VECTOR_ELT(attributes, k))[j]=(int) ds[j];
 		}
 		Free(ds);
 		break;
 	    case NC_BYTE:
-		VECTOR(attributes)[k]=R_NilValue;
+		SET_VECTOR_ELT(attributes, k, R_NilValue);
 		warning("Can't handle NC_BYTE attributes");
 		break;
 	    default:
 		warning("Unknown attribute type");
-		VECTOR(attributes)[k]=R_NilValue;
+		SET_VECTOR_ELT(attributes, k, R_NilValue);
 	    }
 
     }
@@ -377,8 +376,9 @@ SEXP do_get_attribute(SEXP ncid, SEXP var_ids){
 	var_id=INTEGER(var_ids)[i];
 	errorcode=ncvarinq(INTEGER(ncid)[0],var_id,(char *)0,(nc_type *)0,
 			   (int*)0,(int *)0,&natts);
-	if ((errorcode<0) || (natts==0)){
-	    VECTOR(v)[i]=R_NilValue;
+        if ((errorcode<0) || (natts==0)){
+	    /* Was I awake when I wrote this?*/
+	    /* SET_VECTOR_ELT(attributes, k, R_NilValue); */
 	    continue;
 	}
 	PROTECT(attname=allocVector(STRSXP,natts));
@@ -386,54 +386,54 @@ SEXP do_get_attribute(SEXP ncid, SEXP var_ids){
 	for(k=0;k<natts;k++){
 	    errorcode=ncattname(INTEGER(ncid)[0],var_id,k,name);
 	    if (errorcode<0){
-		STRING(attname)[k]=NA_STRING;
-		VECTOR(attributes)[k]=R_NilValue;
+		SET_STRING_ELT(attname, k, NA_STRING);
+		SET_VECTOR_ELT(attributes, k, R_NilValue);
 		continue;
 	    }
-	    STRING(attname)[k]=mkChar(name);
+	    SET_STRING_ELT(attname, k, mkChar(name));
 	    errorcode=ncattinq(INTEGER(ncid)[0],var_id,
 			   name,&atype,&attlen);
 
 	    if (errorcode<0){
-		VECTOR(attributes)[k]=R_NilValue;
+		SET_VECTOR_ELT(attributes, k, R_NilValue);
 		continue;
 	    }
 	    
 	    
 	    switch (atype) {
 	    case NC_LONG:
-		VECTOR(attributes)[k]=allocVector(INTSXP,attlen);
+		SET_VECTOR_ELT(attributes, k, allocVector(INTSXP,attlen));
 		if (ncattget(INTEGER(ncid)[0],var_id,name,
-			     (void *)(INTEGER(VECTOR(attributes)[k]))) <0)
-		    VECTOR(attributes)[k]=R_NilValue;
+			     (void *)(INTEGER(VECTOR_ELT(attributes, k)))) <0)
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		break;
 	    case NC_FLOAT:
 		df=Calloc(attlen,float);
 		if (ncattget(INTEGER(ncid)[0],var_id,
 			     name,(void *)df) <0)
-		    VECTOR(attributes)[k]=R_NilValue;
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		else {
-		    VECTOR(attributes)[k]=allocVector(REALSXP,attlen);
+		    SET_VECTOR_ELT(attributes, k, allocVector(REALSXP,attlen));
 		    for(j=0;j<attlen;j++)
-			REAL(VECTOR(attributes)[k])[j]=(double) df[j];
+			REAL(VECTOR_ELT(attributes, k))[j]=(double) df[j];
 		}
 		Free(df);
 		break;
 	    case NC_DOUBLE:
-		VECTOR(attributes)[k]=allocVector(REALSXP,attlen);
+		SET_VECTOR_ELT(attributes, k, allocVector(REALSXP,attlen));
 		if (ncattget(INTEGER(ncid)[0],var_id,name,
-			     (void *)(REAL(VECTOR(attributes)[k])))<0)
-		    VECTOR(attributes)[k]=R_NilValue;
+			     (void *)(REAL(VECTOR_ELT(attributes, k))))<0)
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		break;
 	    case NC_CHAR:
 		dc=Calloc(attlen+1,char);
 		if (ncattget(INTEGER(ncid)[0],var_id,name,
 			     (void *)dc)<0)
-		    VECTOR(attributes)[k]=R_NilValue;
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		else {
-		dc[attlen]=0; /* may not be zero-terminated */
-		VECTOR(attributes)[k]=allocVector(STRSXP,1);
-		STRING(VECTOR(attributes)[k])[0]=mkChar(dc);
+		    dc[attlen]=0; /* may not be zero-terminated */
+		    SET_VECTOR_ELT(attributes, k, allocVector(STRSXP,1));
+		    SET_STRING_ELT(VECTOR_ELT(attributes, k), 0, mkChar(dc));
 		}
 		Free(dc);
 		break;
@@ -441,25 +441,25 @@ SEXP do_get_attribute(SEXP ncid, SEXP var_ids){
 		ds=Calloc(attlen,short int);
 		if (ncattget(INTEGER(ncid)[0],var_id,name,
 			(void *)ds)<0)
-		    VECTOR(attributes)[k]=R_NilValue;
+		    SET_VECTOR_ELT(attributes, k, R_NilValue);
 		else {
-		    VECTOR(attributes)[k]=allocVector(INTSXP,attlen);
+		    SET_VECTOR_ELT(attributes, k, allocVector(INTSXP,attlen));
 		    for(j=0;j<attlen;j++)
-			INTEGER(VECTOR(attributes)[k])[j]=(int) ds[j];
+			INTEGER(VECTOR_ELT(attributes, k))[j]=(int) ds[j];
 		}
 		Free(ds);
 		break;
 	    case NC_BYTE:
-		VECTOR(attributes)[k]=R_NilValue;
+		SET_VECTOR_ELT(attributes, k, R_NilValue);
 		warning("Can't handle NC_BYTE attributes");
 		break;
 	    default:
 		warning("Unknown attribute type");
-		VECTOR(attributes)[k]=R_NilValue;
+		SET_VECTOR_ELT(attributes, k, R_NilValue);
 	    }
 	}
 	setAttrib(attributes,R_NamesSymbol,attname);
-	VECTOR(v)[i]=attributes;
+	SET_VECTOR_ELT(v, i, attributes);
 	UNPROTECT(2);
     }
     UNPROTECT(1); /*v*/
@@ -493,35 +493,35 @@ SEXP do_netcdf_varnames(SEXP ncid){
 	INTEGER(ids)[i]=vid;
 	ec=ncattinq(INTEGER(ncid)[0],vid,"short_name",(nc_type *) &atttype,&l);    
 	if ((ec<0) || (l<=0) || (atttype!=NC_CHAR))
-	    STRING(short_names)[i]=NA_STRING;
+	    SET_STRING_ELT(long_names, i, NA_STRING);
 	else{  
 	    vname=Calloc(l+1,char);
 	    ncattget(INTEGER(ncid)[0],vid,"short_name",(void *) vname);
 	    vname[l]='\0';
-	    STRING(short_names)[i]=mkChar(vname);
+	    SET_STRING_ELT(short_names, i, mkChar(vname));
 	    Free(vname);
 	}
 	ec=ncattinq(INTEGER(ncid)[0],vid,"long_name",(nc_type *) &atttype,&l);    
 	if ((ec<0) || (l<=0) || (atttype!=NC_CHAR))
-	    STRING(long_names)[i]=NA_STRING;
+	    SET_STRING_ELT(long_names, i, NA_STRING);
 	else{  
 	    vname=Calloc(l+1,char);
 	    ncattget(INTEGER(ncid)[0],vid,"long_name",(void *) vname);
 	    vname[l]='\0';
-	    STRING(long_names)[i]=mkChar(vname);
+	    SET_STRING_ELT(long_names, i, mkChar(vname));
 	    Free(vname);
 	}
 	ncvarinq(INTEGER(ncid)[0],vid,name,(nc_type*)0,(int *)0,(int *)0,(int *)0);
-	STRING(varnames)[i]=mkChar(name);
+	SET_STRING_ELT(varnames, i, mkChar(name));
     }
 
     ncopts=oldncopt;
     
     PROTECT(rval=allocVector(VECSXP,4));
-    VECTOR(rval)[0]=varnames;
-    VECTOR(rval)[1]=short_names;
-    VECTOR(rval)[2]=long_names;
-    VECTOR(rval)[3]=ids;
+    SET_VECTOR_ELT(rval, 0, varnames);
+    SET_VECTOR_ELT(rval, 1, short_names);
+    SET_VECTOR_ELT(rval, 2, long_names);
+    SET_VECTOR_ELT(rval, 3, ids);
     UNPROTECT(4);
 
     UNPROTECT(1); /*rval*/
@@ -548,11 +548,11 @@ SEXP do_dim_netcdf (SEXP ncid){
 	errorcode=ncdiminq(INTEGER(ncid)[0],i,name,&size);
 	if (errorcode<0) {
 	    INTEGER(dims)[i]=errorcode;
-	    STRING(dimnames)[i]=NA_STRING;
+	    SET_STRING_ELT(dimnames, i, NA_STRING);
 	    continue;
 	}
 	INTEGER(dims)[i]=(int) size;
-	STRING(dimnames)[i]=mkChar(name);
+	SET_STRING_ELT(dimnames, i, mkChar(name));
     }
     setAttrib(dims,R_NamesSymbol,dimnames);
     UNPROTECT(2);

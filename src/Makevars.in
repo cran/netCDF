@@ -1,7 +1,7 @@
 ##PKG_CPPFLAGS=-I/path/to/netcdf/headers
 ##PKG_LIBS=-L/path/to/netcdf/libs -lnetcdf
 
-PKG_LIBS=-lnetcdf
-PKG_CPPFLAGS=
+PKG_LIBS=@LIB_NETCDF@
+PKG_CPPFLAGS=@HDR_NETCDF@
 
 

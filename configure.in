@@ -1,0 +1,47 @@
+AC_INIT(R/load.R.in)
+### Handle arguments to configure
+config_opts=${ac_configure_args}
+AC_SUBST(config_opts)
+AC_ARG_WITH(netCDF,
+  [--with-netCDF	specify location of netCDF],
+  WHERE_NETCDF=${withval},
+  WHERE_NETCDF=nowhere)
+
+if test "${WHERE_NETCDF}" != nowhere ; then
+   AC_MSG_CHECKING([for netCDF in ${WHERE_NETCDF}])
+   LIB_NETCDF="-L${WHERE_NETCDF}/libs -lnetcdf"
+   LIBS="${LIBS} ${LIB_NETCDF}"
+   HDR_NETCDF="-I${WHERE_NETCDF}/include"
+   CPPFLAGS="${CPPFLAGS} ${HDR_NETCDF}"
+   
+   AC_TRY_LINK(#include "netcdf.h"
+	, ncopen("foo.nc",NC_NOWRITE);,
+	HAVE_CDF=TRUE,HAVE_CDF=FALSE)
+   if test "${HAVE_CDF}" = FALSE ;  then
+	 AC_MSG_RESULT(no)
+   	 AC_MSG_ERROR([netCDF isn't where you said it was.])
+   fi
+   AC_MSG_RESULT(ok)
+else   	       
+   AC_CHECK_LIB(netcdf,ncopen,HAVE_CDF=TRUE,HAVE_CDF=FALSE)
+
+   if test "${HAVE_CDF}" = FALSE ;  then
+      AC_MSG_ERROR([libnetcdf not found])
+   fi
+
+   LIB_NETCDF=-lnetcdf
+
+   AC_CHECK_HEADER(netcdf.h,HAVE_CDF=${HAVE_CDF},HAVE_CDF=FALSE)
+
+   if test "${HAVE_CDF}" = FALSE ;  then
+      AC_MSG_ERROR([netcdf.h not found])
+   fi
+
+
+fi
+
+AC_SUBST(HAVE_CDF)
+AC_SUBST(HDR_NETCDF)
+AC_SUBST(LIB_NETCDF)
+AC_OUTPUT(R/load.R
+          src/Makevars)

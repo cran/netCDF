@@ -3,7 +3,7 @@ available from UCAR
 
 http://www.unidata.ucar.edu/packages/netcdf/
 
-Debian users can install libnetcfg and libnetcdfg-dev.
+Debian users can install netcdfg and netcdfg-dev.
 
 The Makefile assumes that libnetcdf and the headers are in the standard
 search path, and may need editing. For example, on a Solaris machine this

@@ -1,6 +1,8 @@
 \name{open.netCDF}
 \alias{open.netCDF}
+\alias{is.open.netCDF}
 \alias{close.netCDF}
+\alias{close}
 \alias{dim.netCDF}
 \alias{names.netCDF}
 \alias{summary.netCDF}
@@ -15,6 +17,7 @@ other functions are methods for existing generic functions.
 }
 \usage{
 open.netCDF(filename, verbose=F)
+is.open.netCDF(object)
 close.netCDF(object)
 dim.netCDF(object)
 names.netCDF(object)
@@ -24,6 +27,7 @@ summary.netCDF(object)
 \arguments{
  \item{filename}{name of netCDF file}
  \item{verbose}{Should netCDF error messages be printed?}
+ \item{x}{see below}
 }
 \details{
 NetCDF is a portable data format used by the National Center for
@@ -33,6 +37,7 @@ hyperrectangle subsets of the data can be read efficiently.
 
 The \code{open.netCDF} function opens a netCDF file, which remains open
 until it is explicitly closed.  Data can be read with \code{\link{read.netCDF}}.
+
 }
 \value{
   \code{open.netCDF} returns an object of class \code{netCDF},
@@ -49,4 +54,5 @@ until it is explicitly closed.  Data can be read with \code{\link{read.netCDF}}.
 
 \examples{
 }
-\keyword{file}%-- one or more ...
+\keyword{file}
+

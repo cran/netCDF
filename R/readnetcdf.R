@@ -4,9 +4,6 @@
 ##  Based on code for S-PLUS by Gordon Maclean and others
 #               Copyright (C) 1989,90,91,92,93,94 by UCAR
 
-.First.lib<-function(libname,pkgname){
-  library.dynam("netCDF",pkgname,libname)
-}
 
 is.open.netCDF<-function(x){
     .Call("is_open_netcdf",as.integer(x$id))>=0
