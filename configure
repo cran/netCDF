@@ -538,7 +538,7 @@ fi
 if test "${WHERE_NETCDF}" != nowhere ; then
    echo $ac_n "checking for netCDF in ${WHERE_NETCDF}""... $ac_c" 1>&6
 echo "configure:541: checking for netCDF in ${WHERE_NETCDF}" >&5
-   LIB_NETCDF="-L${WHERE_NETCDF}/libs -lnetcdf"
+   LIB_NETCDF="-L${WHERE_NETCDF}/lib -lnetcdf"
    LIBS="${LIBS} ${LIB_NETCDF}"
    HDR_NETCDF="-I${WHERE_NETCDF}/include"
    CPPFLAGS="${CPPFLAGS} ${HDR_NETCDF}"

@@ -9,7 +9,7 @@ AC_ARG_WITH(netCDF,
 
 if test "${WHERE_NETCDF}" != nowhere ; then
    AC_MSG_CHECKING([for netCDF in ${WHERE_NETCDF}])
-   LIB_NETCDF="-L${WHERE_NETCDF}/libs -lnetcdf"
+   LIB_NETCDF="-L${WHERE_NETCDF}/lib -lnetcdf"
    LIBS="${LIBS} ${LIB_NETCDF}"
    HDR_NETCDF="-I${WHERE_NETCDF}/include"
    CPPFLAGS="${CPPFLAGS} ${HDR_NETCDF}"
