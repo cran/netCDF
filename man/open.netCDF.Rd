@@ -16,18 +16,19 @@ file. For \code{open.netCDF} the whole function name must be used; the
 other functions are methods for existing generic functions.
 }
 \usage{
-open.netCDF(filename, verbose=F)
-is.open.netCDF(object)
-close.netCDF(object)
-dim.netCDF(object)
-names.netCDF(object)
-summary.netCDF(object)
+open.netCDF(con, verbose=FALSE,...)
+is.open.netCDF(x)
+close.netCDF(con,...)
+dim.netCDF(x)
+names.netCDF(x)
+summary.netCDF(object,...)
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
- \item{filename}{name of netCDF file}
+ \item{con}{name of netCDF file for \code{open} or netcdf object for \code{close}}
  \item{verbose}{Should netCDF error messages be printed?}
- \item{x}{see below}
+ \item{x,object}{see below}
+ \item{...}{potential other arguments for summary methods, not used}
 }
 \details{
 NetCDF is a portable data format used by the National Center for
@@ -44,7 +45,7 @@ until it is explicitly closed.  Data can be read with \code{\link{read.netCDF}}.
   \code{dim()} returns the dimensions, \code{names} returns the variable
   names, \code{summary} returns all the attributes. 
 }
-\references{Unidata netCDF website: \url{http://www.unidata.ucar.edu/packages/netcdf/}
+\references{Unidata netCDF website: \url{http://www.unidata.ucar.edu/packages/netcdf/}}
 \author{Thomas Lumley}
 \note{This code uses the deprecated netCDF version 2 compatibility
   library and should be updated.}

@@ -7,7 +7,7 @@ Reads a hyperrectangle of values for the specified variables from a file
 in netCDF format. 
 }
 \usage{
-read.netCDF(x, name=NULL, id=NULL, start=NULL, count=NULL, byrow=T, attr=T)
+read.netCDF(x, name=NULL, id=NULL, start=NULL, count=NULL, byrow=TRUE, attr=TRUE)
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
@@ -17,7 +17,7 @@ read.netCDF(x, name=NULL, id=NULL, start=NULL, count=NULL, byrow=T, attr=T)
  \item{start}{upper left corner of hyperrectangle (or list of these if
    reading more than one variable)}
  \item{count}{dimensions of hyperrectangle (or list of these if reading
-   more than one variable}}
+   more than one variable)}
  \item{byrow}{Transpose the data so that the order of dimensions in R is
  the same as in the file}
  \item{attr}{Return attributes of the variables as well}

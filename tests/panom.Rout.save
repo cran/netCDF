@@ -1,0 +1,60 @@
+
+R : Copyright 2002, The R Development Core Team
+Version 1.5.0 Under development (unstable) (2002-01-03)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type `license()' or `licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type `contributors()' for more information.
+
+Type `demo()' for some demos, `help()' for on-line help, or
+`help.start()' for a HTML browser interface to help.
+Type `q()' to quit R.
+
+> library(netCDF)
+> 
+> precip<-open.netCDF("panom.nc")
+> precip
+netCDF file panom.nc is open
+> summary(precip)
+netCDF file panom.nc is open
+$types
+[1] "numeric" "numeric" "single" 
+
+$dims
+$dims[[1]]
+[1] 73
+
+$dims[[2]]
+[1] 37
+
+$dims[[3]]
+[1] 37 73
+
+
+$dimids
+$dimids[[1]]
+[1] 0
+
+$dimids[[2]]
+[1] 1
+
+$dimids[[3]]
+[1] 1 0
+
+
+$names
+[1] "XPCIPSEAS1_73" "YPCIPSEAS1_37" "PANOM"        
+
+> 
+> panom<-read.netCDF(precip)
+> is.na(panom$PANOM)<- panom$PANOM==attr(panom$PANOM,"missing_value")
+> 
+> image(panom[[1]],panom[[2]],t(panom$PANOM),xlab="longitude",
++       ylab="latitude",main="precipitation anomaly") 
+> 
+> close(precip)
+[1] TRUE
+> q("no")

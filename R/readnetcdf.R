@@ -1,5 +1,5 @@
 ##
-## NetCDF code for  R by Thomas Lumley (c) 1999-2000
+## NetCDF code for  R by Thomas Lumley (c) 1999-2002
 ##
 ##  Based on code for S-PLUS by Gordon Maclean and others
 #               Copyright (C) 1989,90,91,92,93,94 by UCAR
@@ -9,10 +9,9 @@ is.open.netCDF<-function(x){
     .Call("is_open_netcdf",as.integer(x$id))>=0
 }
 
-if (!exists("close"))
-    close<-function(x,...) UseMethod("close")
 
-open.netCDF<-function(filename,verbose=F){
+open.netCDF<-function(con,verbose=FALSE,...){
+    filename<-con
     if (!file.exists(filename))
         stop(paste("File",filename," not found"))
     rval<-.C("open_netcdf",filename,id=as.integer(verbose))
@@ -21,15 +20,15 @@ open.netCDF<-function(filename,verbose=F){
     return(rval);
 }
 
-close.netCDF<-function(x){
-    if (.Call("is_open_netcdf",as.integer(x$id))<0)
+close.netCDF<-function(con,...){
+    if (.Call("is_open_netcdf",as.integer(con$id))<0)
         return(FALSE)
     else
-        .C("close_netcdf",as.integer(x$id))
+        .C("close_netcdf",as.integer(con$id))
     return(TRUE)
 }
 
-print.netCDF<-function(x){
+print.netCDF<-function(x,...){
     cat("netCDF file",x$filename,"is ")
     if (!is.open.netCDF(x))
         cat("closed\n")
@@ -48,7 +47,8 @@ dim.netCDF<-function(x){
     .Call("do_dim_netcdf",as.integer(x$id))
 }
 
-summary.netCDF<-function(x){
+summary.netCDF<-function(object,...){
+    x<-object
     if  (.Call("is_open_netcdf",as.integer(x$id))<0)
         return(x)
     nn<-names(x)
@@ -65,12 +65,12 @@ summary.netCDF<-function(x){
     rval
 }
 
-print.summary.netCDF<-function(x){
+print.summary.netCDF<-function(x,...){
     print(x[[1]])
     print(x[[2]])
 }
 
-read.netCDF<-function(x,name=NULL,id=NULL,start=NULL,count=NULL,byrow=T,attr=T){
+read.netCDF<-function(x,name=NULL,id=NULL,start=NULL,count=NULL,byrow=TRUE,attr=TRUE){
     
     if (is.character(x)){
         y<-open.netCDF(x)  ##x is a filename
