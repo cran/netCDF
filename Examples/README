@@ -1,0 +1,11 @@
+
+*.nc  : netCDF files
+*.cdl : Same files in the human-readable CDL format.
+
+You can convert back and forwards with the ncdump/ncgen utilities.
+
+foo.nc and test.nc are just simple tests.
+
+panom.nc is data on the "precipitation anomaly" for 15-Jan-1989, from
+NOAA's Ferret data server http://ferret.wrc.noaa.gov/fbin/climate_server.
+

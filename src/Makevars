@@ -1,0 +1,5 @@
+##PKG_CPPFLAGS=-I/path/to/netcdf/headers
+##PKG_LIBS=-L/path/to/netcdf/libs -lnetcdf
+
+PKG_LIBS=-L/usr/lib -lnetcdf
+

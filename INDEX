@@ -1,0 +1,2 @@
+open.netCDF              Open a NetCDF data file
+read.netCDF              Read subsets of a netCDF file

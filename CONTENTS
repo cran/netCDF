@@ -1,0 +1,9 @@
+open.netCDF	Open a netCDF file
+read.netCDF	Read from it
+close.netCDF	Close it
+
+
+dim.netCDF	Methods for reading netCDF metadata
+names.netCDF
+summary.netCDF
+
